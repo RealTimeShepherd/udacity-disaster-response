@@ -65,7 +65,7 @@ def evaluate_model(model, X_test, y_test, category_names):
 
 
 def save_model(model, model_filepath):
-	joblib.dump(model, f'{model_filepath}.pkl')
+	joblib.dump(model, f'{model_filepath}')
 
 
 def main():
