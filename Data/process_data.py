@@ -38,7 +38,7 @@ def clean_data(df):
     categories.columns = category_colnames
     for column in categories:
         categories[column] = categories[column].apply(lambda x: x[-1])
-        categories[column] = pd.to_numeric(categories[column])
+        categories[column] = pd.to_numeric(categories[column]).astype('bool').astype(int)
     df = df.drop(['categories'], axis=1)
     df = df.join(categories)
     return df.drop_duplicates()
