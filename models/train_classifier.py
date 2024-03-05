@@ -9,7 +9,7 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
@@ -20,7 +20,6 @@ url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-
 def load_data(database_filepath):
 	engine = create_engine(f'sqlite:///{database_filepath}')
 	df = pd.read_sql_table('messages_categorised', engine)
-	#df = df.drop('child_alone', axis=1) # All values are the same in this column, if we don't remove it the training will fail
 	X = df.message.values
 	y = df.iloc[:, -36:]
 	category_names = df.columns.tolist()[4:]
@@ -47,12 +46,10 @@ def build_model():
 	pipeline = Pipeline([
 		('vect', CountVectorizer(tokenizer=tokenize, token_pattern=None)),
 		('tfidf', TfidfTransformer()),
-		('clf', MultiOutputClassifier(estimator=LogisticRegression()))
+		('clf', MultiOutputClassifier(estimator=RandomForestClassifier(n_estimators=500)))
 	])
 	parameters = {
-		'vect__ngram_range': ((1, 1), (1, 2)),
-		'clf__estimator__max_iter': [100, 200, 300],
-		'clf__estimator__intercept_scaling': [1, 2, 3]
+		'clf__estimator__max_features': ['sqrt', 'log2'],
 	}
 	return GridSearchCV(pipeline, param_grid=parameters)
 
