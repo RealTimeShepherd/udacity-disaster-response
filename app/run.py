@@ -7,7 +7,7 @@ from nltk.tokenize import word_tokenize
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Pie
 import joblib
 from sqlalchemy import create_engine
 
@@ -39,13 +39,50 @@ model = joblib.load("../models/classifier.pkl")
 def index():
 	
 	# extract data needed for visuals
-	# TODO: Below is an example - modify to extract data for your own visuals
 	genre_counts = df.groupby('genre').count()['message']
 	genre_names = list(genre_counts.index)
+
+	category_names = [c.replace('_', ' ') for c in df.columns.tolist()[4:]]
+	category_counts = df.iloc[:, -36:].sum().values
+
+	translated_labels = ['English', 'Translated']
+	null_count = df['original'].isnull().sum()
+	translated_counts = [null_count, df.shape[0] - null_count]
 	
 	# create visuals
-	# TODO: Below is an example - modify to create your own visuals
+	
 	graphs = [
+		{
+			'data': [
+				Pie(
+					labels=translated_labels,
+					values=translated_counts
+				)
+			],
+
+			'layout': {
+				'title': 'English vs translated messages'
+			}
+		},
+		{
+			'data': [
+				Bar(
+					x=category_names,
+					y=category_counts
+				)
+			],
+
+			'layout': {
+				'title': 'Number of hits per category',
+				'yaxis': {
+					'title': "Hits"
+				},
+				'xaxis': {
+					'title': "Category",
+					'categoryorder': 'total descending'
+				}
+			}
+		},
 		{
 			'data': [
 				Bar(
