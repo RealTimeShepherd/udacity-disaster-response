@@ -3,17 +3,17 @@
 ## Project summary
 This Disaster Reponse project contains the following elements:
 
-	- ETL process (process_data.py)
-			This script reads in data from two CSV files, cleans the data and stores it in a SQLite DB
+1. ETL process (process_data.py)
+	- This script reads in data from two CSV files, cleans the data and stores it in a SQLite DB
 
-	- ML training (train_classifier.py)
-			This script takes the data from the SQLite DB and splits it into training and test data
-			It then uses Natural Language processing and features from scikit-learn to train a classifier model
-			The finished model is saved to a pickle file and is capable of reading and categorising text messages
+2. ML training (train_classifier.py)
+	- This script takes the data from the SQLite DB and splits it into training and test data
+	- It then uses Natural Language processing and features from scikit-learn to train a classifier model
+	- The finished model is saved to a pickle file and is capable of reading and categorising text messages
+	- **NOTE: The model is not uploaded to github due to its size, this script will recreate it but will take hours to run**
 
-	- Web application (run.py; go.html; master.html)
-			The web app uses the classifier model created in the previous step to read messages and assign them
-			to one or more of 36 designated categories to assist in guiding the message to the appropriate group
+3. Web application (run.py; go.html; master.html)
+	- The web app uses the classifier model created in the previous step to read messages and assign them to one or more of 36 designated categories to assist in guiding the message to the appropriate group
 
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
