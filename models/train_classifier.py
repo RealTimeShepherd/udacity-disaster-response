@@ -18,6 +18,21 @@ url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-
 
 
 def load_data(database_filepath):
+	"""
+	Load data from a SQLite database and return features, targets, and category names.
+
+	Parameters:
+	- database_filepath: str
+			Filepath of the SQLite database.
+
+	Returns:
+	- X: numpy.array
+			Feature variable (message values).
+	- y: pandas.DataFrame
+			Target variables (category values).
+	- category_names: list
+			List of category names.
+	"""
 	engine = create_engine(f'sqlite:///{database_filepath}')
 	df = pd.read_sql_table('messages_categorised', engine)
 	X = df.message.values
@@ -27,6 +42,17 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+	"""
+	Tokenize and preprocess text data.
+
+	Parameters:
+	- text: str
+			Input text to tokenize.
+
+	Returns:
+	- clean_tokens: list
+			List of clean tokens after tokenization and preprocessing.
+	"""
 	detected_urls = re.findall(url_regex, text)
 	for url in detected_urls:
 		text = text.replace(url, "urlplaceholder")
@@ -43,6 +69,13 @@ def tokenize(text):
 
 
 def build_model():
+	"""
+	Build and configure the machine learning pipeline.
+
+	Returns:
+	- model: GridSearchCV
+			GridSearchCV model containing the pipeline and parameter grid.
+	"""
 	pipeline = Pipeline([
 		('vect', CountVectorizer(tokenizer=tokenize, token_pattern=None)),
 		('tfidf', TfidfTransformer()),
@@ -55,6 +88,22 @@ def build_model():
 
 
 def evaluate_model(model, X_test, y_test, category_names):
+	"""
+	Evaluate the trained model and print classification report for each category.
+
+	Parameters:
+	- model: GridSearchCV
+			Trained model.
+	- X_test: numpy.array
+			Test feature variables.
+	- y_test: pandas.DataFrame
+			Test target variables.
+	- category_names: list
+			List of category names.
+
+	Returns:
+	- None
+	"""
 	y_pred = model.predict(X_test)
 	for idx, column_name in enumerate(category_names):
 		print('Results for ' + column_name)
@@ -62,10 +111,25 @@ def evaluate_model(model, X_test, y_test, category_names):
 
 
 def save_model(model, model_filepath):
+	"""
+	Save the trained model as a serialized file.
+
+	Parameters:
+	- model: GridSearchCV
+			Trained model to be saved.
+	- model_filepath: str
+			Filepath to save the model.
+
+	Returns:
+	- None
+	"""
 	joblib.dump(model, f'{model_filepath}')
 
 
 def main():
+	"""
+	Main script to execute model training steps.
+	"""
 	if len(sys.argv) == 3:
 		database_filepath, model_filepath = sys.argv[1:]
 		print('Loading data...\n	DATABASE: {}'.format(database_filepath))
